@@ -82,6 +82,9 @@ class BRepTools
 	static  void Write(const TopoDS_Shape& Sh,Standard_OStream& S) ;
 	%rename(clean) Clean;
 	static  void Clean(const TopoDS_Shape& S) ;
+	
+	%rename(getOuterWire) OuterWire;
+	static  TopoDS_Wire OuterWire(const TopoDS_Face& F) ;
 };
 
 %extend BRepTools

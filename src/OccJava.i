@@ -72,6 +72,7 @@
 %include "ShapeBuild.i"
 %include "XSControl.i"
 %include "ShapeFix.i"
+%include "ShapeAnalysis.i"
 %include "APIHeaderSection_MakeHeader.i"
 // This one require Opencascade 6.2
 %include "ShapeUpgrade.i"
@@ -79,14 +80,13 @@
 %include "GeomAPI.i"
 %include "GC.i"
 
-
 %typemap(javacode) TopExp
 %{
-	public static TopoDS_Vertex[] vertices(TopoDS_Edge edge)
+	public static TopoDS_Vertex[] vertices(TopoDS_Edge edge, boolean cumOri)
 	{
 		TopoDS_Vertex first=new TopoDS_Vertex();
 		TopoDS_Vertex second=new TopoDS_Vertex();
-		vertices(edge, first, second);
+		vertices(edge, first, second, cumOri);
 		return new TopoDS_Vertex[]{first, second};
 	}
 %}
@@ -96,6 +96,8 @@ class TopLoc_Location
 	%rename(isIdentity) IsIdentity;
 	%rename(transformation) Transformation;
 	public:
+	TopLoc_Location ();
+	TopLoc_Location (const gp_Trsf& T);
 	Standard_Boolean IsIdentity();
 	const gp_Trsf& Transformation();
 };
@@ -104,7 +106,9 @@ class TopExp
 {
 	public:
 	%rename(vertices) Vertices;
+	%rename(commonVertex) CommonVertex;
 	static void Vertices(const TopoDS_Edge& E,TopoDS_Vertex& Vfirst,TopoDS_Vertex& Vlast,const Standard_Boolean CumOri = Standard_False) ;
+	static Standard_Boolean CommonVertex(const TopoDS_Edge& E1, const TopoDS_Edge& E2, TopoDS_Vertex& V) ;
 };
 
 /**
@@ -347,6 +351,7 @@ class BRepMesh_DiscretRoot
 class BRepMesh_IncrementalMesh : public BRepMesh_DiscretRoot
 {
 	%rename(perform) Perform;
+//	%rename(update) Update;
 	%rename(isModified) IsModified;
 	
 	public:
@@ -356,6 +361,7 @@ class BRepMesh_IncrementalMesh : public BRepMesh_DiscretRoot
 		const Standard_Real Ang = 0.5);
 		
 	void Perform();
+//	void Update(const TopoDS_Shape& S) ;
 	Standard_Boolean IsModified() const;
 };
 

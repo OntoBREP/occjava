@@ -23,7 +23,12 @@
 #include <Geom_Curve.hxx>
 #include <BRep_Builder.hxx>
 #include <TopoDS_Builder.hxx>
+#include <TopLoc_Location.hxx>
 %}
+
+%rename(Geom2d_Curve) Handle_Geom2d_Curve;
+%rename(Geom_Curve) Handle_Geom_Curve;
+%rename(Geom_Surface) Handle_Geom_Surface;
 
 %typemap(javacode) BRep_Tool
 %{
@@ -33,7 +38,7 @@
 		range(edge, toReturn);
 		return toReturn;
 	}
-
+	
 	public static Geom2d_Curve curveOnSurface(TopoDS_Edge e, TopoDS_Face f, double[] range)
 	{
 		double[] d2=new double[1];
@@ -45,6 +50,7 @@
 	public static Geom_Curve curve(TopoDS_Edge e, double[] range)
 	{
 		double[] d2=new double[1];
+        // this calls java BRep_Tool.curve defined below
 		Geom_Curve toReturn=curve(e, range, d2);
 		range[1]=d2[0];
 		return toReturn;
@@ -70,17 +76,19 @@ class BRep_Tool
 	static gp_Pnt2d Parameters(const TopoDS_Vertex& V,const TopoDS_Face& F) ;
 	static Standard_Real Parameter(const TopoDS_Vertex& V,const TopoDS_Edge& E) ;
 	static Standard_Boolean Degenerated(const TopoDS_Edge& E) ;
+	static Standard_Boolean SameParameter(const TopoDS_Edge& E) ;
+	static Standard_Boolean SameRange(const TopoDS_Edge& E) ;
 	static Standard_Boolean HasContinuity(const TopoDS_Edge& E,const TopoDS_Face& F1,const TopoDS_Face& F2) ;
 	static GeomAbs_Shape Continuity(const TopoDS_Edge& E,const TopoDS_Face& F1,const TopoDS_Face& F2) ;
 	static Standard_Real Tolerance(const TopoDS_Face& F) ;
 	static Standard_Real Tolerance(const TopoDS_Edge& E) ;
-	static Standard_Real Tolerance(const TopoDS_Vertex& V);
+	static Standard_Real Tolerance(const TopoDS_Vertex& V) ;
+	static Standard_Boolean IsClosed(const TopoDS_Shape &S) ;
 	
-	/*static const Handle_Geom_Curve& Curve(const TopoDS_Edge& E,
-		Standard_Real& First,Standard_Real& Last) ;
-	static const Handle_Geom_Surface& Surface(const TopoDS_Face& F) ;
-	static const Handle_Geom2d_Curve& CurveOnSurface(const TopoDS_Edge& E,
-		const TopoDS_Face& F,Standard_Real& First,Standard_Real& Last) ;*/
+/*	static Handle_Geom_Curve Curve(const TopoDS_Edge& E, Standard_Real& First,Standard_Real& Last) ;
+	static Handle_Geom_Surface Surface(const TopoDS_Face& F) ;
+	static Handle_Geom2d_Curve CurveOnSurface(const TopoDS_Edge& E, const TopoDS_Face& F,Standard_Real& First,Standard_Real& Last) ;
+*/
 };
 
 // Publish methods which return pointer instead of Handle. We do not need
@@ -137,7 +145,22 @@ class BRep_Builder: public TopoDS_Builder
 	%rename(updateVertex) UpdateVertex;
 	public:
 	BRep_Builder();
+	void MakeFace(TopoDS_Face& F) const;
+	void MakeFace(TopoDS_Face& F, const Handle_Geom_Surface& S, const Standard_Real tol) const;
+	void MakeFace(TopoDS_Face& F, const Handle_Geom_Surface& S, const TopLoc_Location& L, const Standard_Real tol) const;
+	
+	void MakeEdge(TopoDS_Edge& E) const;
+	void MakeEdge(TopoDS_Edge& E, const Handle_Geom_Curve& C, const Standard_Real tol) const;
+	void MakeEdge(TopoDS_Edge& E, const Handle_Geom_Curve& C, const TopLoc_Location& L, const Standard_Real tol) const;
+    void UpdateEdge(const TopoDS_Edge& edge, const Handle_Geom_Curve& C, const Standard_Real tolerance) const; 
+	void UpdateEdge(const TopoDS_Edge& edge, const Handle_Geom2d_Curve& C, const TopoDS_Face& F, const Standard_Real tolerance) const;
+	void UpdateEdge(const TopoDS_Edge& edge, const Handle_Geom2d_Curve& C1, const Handle_Geom2d_Curve& C2, const TopoDS_Face& F, const Standard_Real tolerance) const;
+	
+	void MakeVertex(TopoDS_Vertex& V) const;
+	void MakeVertex(TopoDS_Vertex& V, const gp_Pnt& P, const Standard_Real tol) const;
 	void UpdateVertex(const TopoDS_Vertex& vertex, const Standard_Real u, const Standard_Real v, const TopoDS_Face& face, const Standard_Real tolerance) const;
 	void UpdateVertex(const TopoDS_Vertex& vertex, const Standard_Real tolerance) const;
+	
+	void Degenerated(const TopoDS_Edge& E, const Standard_Boolean D) const ;
 };
 

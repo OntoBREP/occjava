@@ -19,8 +19,6 @@
  */
 
 %{
-	#include <Standard_Version.hxx>
-	#include <gp_Trsf.hxx>
 	jdoubleArray XYZtoDoubleArray(JNIEnv* jenv, const gp_XYZ & xyz)
 	{
 	    jdouble nativeArray[]={xyz.X(), xyz.Y(), xyz.Z()};
@@ -28,27 +26,11 @@
 		jenv->SetDoubleArrayRegion(toReturn, 0, 3, nativeArray);
 		return toReturn;
 	}
-    inline static void gp_Trsf_setValuesImpl(gp_Trsf * self, const Standard_Real a11,const Standard_Real a12,
-        const Standard_Real a13,const Standard_Real a14,const Standard_Real a21,
-        const Standard_Real a22,const Standard_Real a23,const Standard_Real a24,
-        const Standard_Real a31,const Standard_Real a32,const Standard_Real a33,
-        const Standard_Real a34,const Standard_Real Tolang,
-        const Standard_Real TolDist) {
-        self->SetValues(a11, a12, a13, a14,
-                        a21, a22, a23, a24,
-                        a31, a32, a33, a34
-#if OCC_VERSION_MAJOR >= 6 && OCC_VERSION_MINOR >= 8
-                        );
-#else
-                        ,Tolang, TolDist);
-#endif
-    }
 %}
 
 /**
  * gp_Pnt
  */
-
 %typemap(jni) gp_Pnt, const gp_Pnt&  "jdoubleArray"
 %typemap(jtype) gp_Pnt, const gp_Pnt& "double[]"
 %typemap(jstype) gp_Pnt, const gp_Pnt& "double[]"
@@ -78,6 +60,7 @@
 
 %typemap(javain) gp_Pnt, const gp_Pnt& "$javainput"
 %typemap(javaout) gp_Pnt, const gp_Pnt&
+
 {
 	return $jnicall;
 }
@@ -85,7 +68,6 @@
 /**
  * gp_Pnt2d
  */
-
 %typemap(jni) gp_Pnt2d, const gp_Pnt2d&  "jdoubleArray"
 %typemap(jtype) gp_Pnt2d, const gp_Pnt2d& "double[]"
 %typemap(jstype) gp_Pnt2d, const gp_Pnt2d& "double[]"
@@ -116,6 +98,143 @@
 	JCALL4(SetDoubleArrayRegion, jenv, toReturn, 0, 2, nativeArray);
 	$result=toReturn;
 }
+
+/**
+ * gp_Dir2d
+ */
+%typemap(jni) gp_Dir2d, const gp_Dir2d&  "jdoubleArray"
+%typemap(jtype) gp_Dir2d, const gp_Dir2d& "double[]"
+%typemap(jstype) gp_Dir2d, const gp_Dir2d& "double[]"
+
+%typemap(in) gp_Dir2d, const gp_Dir2d&
+{
+	if(JCALL1(GetArrayLength, jenv, $input)!=2)
+		SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "array length must be 2");
+	jdouble * naxe=JCALL2(GetDoubleArrayElements, jenv, $input, NULL);
+	$1=new gp_Dir2d(naxe[0],naxe[1]);
+}
+
+%typemap(freearg) gp_Dir2d, const gp_Dir2d&
+{
+	delete $1;
+}
+
+%typemap(javain) gp_Dir2d, const gp_Dir2d& "$javainput"
+%typemap(javaout) gp_Dir2d, const gp_Dir2d&
+{
+	return $jnicall;
+}
+
+%typemap(out) gp_Dir2d, const gp_Dir2d&
+{
+    jdouble nativeArray[]={$1.X(), $1.Y()};
+	jdoubleArray toReturn=JCALL1(NewDoubleArray, jenv, 2);
+	JCALL4(SetDoubleArrayRegion, jenv, toReturn, 0, 2, nativeArray);
+	$result=toReturn;
+}
+
+/**
+ * gp_Vec2d
+ */
+%typemap(jni) gp_Vec2d, const gp_Vec2d&  "jdoubleArray"
+%typemap(jtype) gp_Vec2d, const gp_Vec2d& "double[]"
+%typemap(jstype) gp_Vec2d, const gp_Vec2d& "double[]"
+
+%typemap(in) gp_Vec2d, const gp_Vec2d&
+{
+	if(JCALL1(GetArrayLength, jenv, $input)!=2)
+		SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "array length must be 2");
+	jdouble * naxe=JCALL2(GetDoubleArrayElements, jenv, $input, NULL);
+	$1=new gp_Vec2d(naxe[0],naxe[1]);
+}
+
+%typemap(freearg) gp_Vec2d, const gp_Vec2d&
+{
+	delete $1;
+}
+
+%typemap(javain) gp_Vec2d, const gp_Vec2d& "$javainput"
+%typemap(javaout) gp_Vec2d, const gp_Vec2d&
+{
+	return $jnicall;
+}
+
+%typemap(out) gp_Vec2d, const gp_Vec2d&
+{
+    jdouble nativeArray[]={$1.X(), $1.Y()};
+	jdoubleArray toReturn=JCALL1(NewDoubleArray, jenv, 2);
+	JCALL4(SetDoubleArrayRegion, jenv, toReturn, 0, 2, nativeArray);
+	$result=toReturn;
+}
+
+/**
+ * gp_Ax2d
+ */
+%typemap(jni) gp_Ax2d, const gp_Ax2d&  "jdoubleArray"
+%typemap(jtype) gp_Ax2d, const gp_Ax2d& "double[]"
+%typemap(jstype) gp_Ax2d, const gp_Ax2d& "double[]"
+
+%typemap(in) gp_Ax2d, const gp_Ax2d&
+{
+	if(JCALL1(GetArrayLength, jenv, $input)!=4)
+		SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "array length must be 4");
+	jdouble * naxe=JCALL2(GetDoubleArrayElements, jenv, $input, NULL);
+	$1=new gp_Ax2d(gp_Pnt2d(naxe[0],naxe[1]), gp_Dir2d(naxe[2], naxe[3]));
+}
+
+%typemap(freearg) gp_Ax2d, const gp_Ax2d&
+{
+	delete $1;
+}
+
+%typemap(out) gp_Ax2d, const gp_Ax2d&
+{
+	jdouble nativeArray[]={$1.Location().X(), $1.Location().Y(), $1.Direction().X(), $1.Direction().Y()};
+	jdoubleArray toReturn=JCALL1(NewDoubleArray, jenv, 4);
+	JCALL4(SetDoubleArrayRegion, jenv, toReturn, 0, 4, nativeArray);
+	$result=toReturn;
+}
+
+%typemap(javain) gp_Ax2d, const gp_Ax2d& "$javainput"
+%typemap(javaout) gp_Ax2d, const gp_Ax2d&
+{
+	return $jnicall;
+}
+
+/**
+ * gp_Ax22d
+ */
+%typemap(jni) gp_Ax22d, const gp_Ax22d&  "jdoubleArray"
+%typemap(jtype) gp_Ax22d, const gp_Ax22d& "double[]"
+%typemap(jstype) gp_Ax22d, const gp_Ax22d& "double[]"
+
+%typemap(in) gp_Ax22d, const gp_Ax22d&
+{
+	if(JCALL1(GetArrayLength, jenv, $input)!=6)
+		SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "array length must be 6");
+	jdouble * naxe=JCALL2(GetDoubleArrayElements, jenv, $input, NULL);
+	$1=new gp_Ax22d(gp_Pnt2d(naxe[0],naxe[1]), gp_Dir2d(naxe[2], naxe[3]), gp_Dir2d(naxe[4], naxe[5]));
+}
+
+%typemap(freearg) gp_Ax22d, const gp_Ax22d&
+{
+	delete $1;
+}
+
+%typemap(out) gp_Ax22d, const gp_Ax22d&
+{
+	jdouble nativeArray[]={$1.Location().X(), $1.Location().Y(), $1.XDirection().X(), $1.XDirection().Y(), $1.YDirection().X(), $1.YDirection().Y()};
+	jdoubleArray toReturn=JCALL1(NewDoubleArray, jenv, 6);
+	JCALL4(SetDoubleArrayRegion, jenv, toReturn, 0, 6, nativeArray);
+	$result=toReturn;
+}
+
+%typemap(javain) gp_Ax22d, const gp_Ax22d& "$javainput"
+%typemap(javaout) gp_Ax22d, const gp_Ax22d&
+{
+	return $jnicall;
+}
+
 /**
  * gp_Pln
  */
@@ -220,6 +339,40 @@
 }
 
 /**
+ * gp_Ax3
+ */
+%typemap(jni) gp_Ax3, const gp_Ax3&  "jdoubleArray"
+%typemap(jtype) gp_Ax3, const gp_Ax3& "double[]"
+%typemap(jstype) gp_Ax3, const gp_Ax3& "double[]"
+
+%typemap(in) gp_Ax3, const gp_Ax3&
+{
+	if(JCALL1(GetArrayLength, jenv, $input)!=9)
+		SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "array length must be 9");
+	jdouble * naxe=JCALL2(GetDoubleArrayElements, jenv, $input, NULL);
+	$1=new gp_Ax3(gp_Pnt(naxe[0],naxe[1],naxe[2]), gp_Dir(naxe[3], naxe[4], naxe[5]), gp_Dir(naxe[6], naxe[7], naxe[8]));
+}
+
+%typemap(freearg) gp_Ax3, const gp_Ax3&
+{
+	delete $1;
+}
+
+%typemap(out) gp_Ax3, const gp_Ax3&
+{
+	jdouble nativeArray[]={$1.Location().X(), $1.Location().Y(), $1.Location().Z(), $1.Direction().X(), $1.Direction().Y(), $1.Direction().Z(),$1.XDirection().X(), $1.XDirection().Y(), $1.XDirection().Z(),$1.YDirection().X(), $1.YDirection().Y(), $1.YDirection().Z()};
+	jdoubleArray toReturn=JCALL1(NewDoubleArray, jenv, 12);
+	JCALL4(SetDoubleArrayRegion, jenv, toReturn, 0, 12, nativeArray);
+	$result=toReturn;
+}
+
+%typemap(javain) gp_Ax3, const gp_Ax3& "$javainput"
+%typemap(javaout) gp_Ax3, const gp_Ax3&
+{
+	return $jnicall;
+}
+
+/**
  * gp_Ax2
  */
 %typemap(jni) gp_Ax2, const gp_Ax2&  "jdoubleArray"
@@ -228,10 +381,10 @@
 
 %typemap(in) gp_Ax2, const gp_Ax2&
 {
-	if(JCALL1(GetArrayLength, jenv, $input)!=6)
-		SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "array length must be 6");
+	if(JCALL1(GetArrayLength, jenv, $input)!=9)
+		SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, "array length must be 9");
 	jdouble * naxe=JCALL2(GetDoubleArrayElements, jenv, $input, NULL);
-	$1=new gp_Ax2(gp_Pnt(naxe[0],naxe[1],naxe[2]), gp_Dir(naxe[3], naxe[4], naxe[5]));
+	$1=new gp_Ax2(gp_Pnt(naxe[0],naxe[1],naxe[2]), gp_Dir(naxe[3], naxe[4], naxe[5]), gp_Dir(naxe[6], naxe[7], naxe[8]));
 }
 
 %typemap(freearg) gp_Ax2, const gp_Ax2&
@@ -241,7 +394,10 @@
 
 %typemap(out) gp_Ax2, const gp_Ax2&
 {
-	##error TODO
+	jdouble nativeArray[]={$1.Location().X(), $1.Location().Y(), $1.Location().Z(), $1.Direction().X(), $1.Direction().Y(), $1.Direction().Z(),$1.XDirection().X(), $1.XDirection().Y(), $1.XDirection().Z(),$1.YDirection().X(), $1.YDirection().Y(), $1.YDirection().Z()};
+	jdoubleArray toReturn=JCALL1(NewDoubleArray, jenv, 12);
+	JCALL4(SetDoubleArrayRegion, jenv, toReturn, 0, 12, nativeArray);
+	$result=toReturn;
 }
 
 %typemap(javain) gp_Ax2, const gp_Ax2& "$javainput"
@@ -272,7 +428,10 @@
 
 %typemap(out) gp_Ax1, const gp_Ax1&
 {
-	##error TODO
+	jdouble nativeArray[]={$1.Location().X(), $1.Location().Y(), $1.Location().Z(), $1.Direction().X(), $1.Direction().Y(), $1.Direction().Z()};
+	jdoubleArray toReturn=JCALL1(NewDoubleArray, jenv, 6);
+	JCALL4(SetDoubleArrayRegion, jenv, toReturn, 0, 6, nativeArray);
+	$result=toReturn;
 }
 
 %typemap(javain) gp_Ax1, const gp_Ax1& "$javainput"
@@ -284,16 +443,12 @@
 /**
  * gp_Trsf
  */
+ %{#include <gp_Trsf.hxx>%}
  
 %rename(GP_Trsf) gp_Trsf;
 
 %typemap(javacode) gp_Trsf
 %{
-	public void setValues(double[] matrix) {
-        setValues(matrix, 0, 0);
-    }
-    /** @Deprecated Since OCCT 6.8 tolAng and tolDist arguments not longer exists */
-    @Deprecated
 	public void setValues(double[] matrix, double tolAng, double tolDist)
 	{
 		if(matrix.length!=12)
@@ -301,9 +456,8 @@
 		setValues(
 			matrix[0], matrix[1], matrix[2], matrix[3],
 			matrix[4], matrix[5], matrix[6], matrix[7],
-			matrix[8], matrix[9], matrix[10], matrix[11],
-			tolAng, tolDist);
-	}
+			matrix[8], matrix[9], matrix[10], matrix[11]);
+	}	
 %}
 
 class gp_Trsf
@@ -315,32 +469,15 @@ class gp_Trsf
 	gp_Trsf();
 	void SetRotation(const gp_Ax1& A1,const Standard_Real Ang) ;
 	void SetTranslation(const gp_Vec& V) ;
+	void SetValues(const Standard_Real a11,const Standard_Real a12,
+		const Standard_Real a13,const Standard_Real a14,const Standard_Real a21,
+		const Standard_Real a22,const Standard_Real a23,const Standard_Real a24,
+		const Standard_Real a31,const Standard_Real a32,const Standard_Real a33,
+		const Standard_Real a34);
 };
-
 
 %extend gp_Trsf
 {
-    //TODO Should be generated as deprecated but I don't know how to do
-    void setValues(const Standard_Real a11,const Standard_Real a12,
-        const Standard_Real a13,const Standard_Real a14,const Standard_Real a21,
-        const Standard_Real a22,const Standard_Real a23,const Standard_Real a24,
-        const Standard_Real a31,const Standard_Real a32,const Standard_Real a33,
-        const Standard_Real a34,const Standard_Real Tolang,
-        const Standard_Real TolDist) {
-        gp_Trsf_setValuesImpl(self, a11, a12, a13, a14,
-                        a21, a22, a23, a24,
-                        a31, a32, a33, a34
-                        ,Tolang, TolDist);
-    }
-    void setValues(const Standard_Real a11,const Standard_Real a12,
-        const Standard_Real a13,const Standard_Real a14,const Standard_Real a21,
-        const Standard_Real a22,const Standard_Real a23,const Standard_Real a24,
-        const Standard_Real a31,const Standard_Real a32,const Standard_Real a33,
-        const Standard_Real a34) {
-        gp_Trsf_setValuesImpl(self, a11, a12, a13, a14,
-                        a21, a22, a23, a24,
-                        a31, a32, a33, a34, 0, 0);
-    }
 
 	/** Easy to use with javax.vecmath.Matrix4D */
 	void getValues(double matrix[16])
@@ -354,6 +491,7 @@ class gp_Trsf
 		matrix[14]=0;
 		matrix[15]=1;
 	}
+	
 }
 
 /**
@@ -367,6 +505,158 @@ class gp_Circ
     gp_Circ(const gp_Ax2& axis, const Standard_Real radius);
 };
 
+%extend gp_Circ
+{
+	
+	Standard_Real getArea()
+   	{
+   		return self->Area();	
+   	}
+   	
+   	gp_Pnt getLocation()
+   	{
+		return self->Location();	
+   	}
+   	
+   	gp_Ax2 getPosition()
+   	{
+		return self->Position();	
+   	}
+   	
+   	gp_Ax1 getAxis()
+   	{
+		return self->Axis();	
+   	}
+   	
+   	gp_Ax1 getAxisX()
+   	{
+		return self->XAxis();	
+   	}
+   	
+   	gp_Ax1 getAxisY()
+   	{
+		return self->YAxis();	
+   	}
+   	
+   	Standard_Real getRadius()
+   	{
+		return self->Radius();	
+   	}
+   	
+   	Standard_Real getLength()
+   	{
+		return self->Length();	
+   	} 	 
+  	
+}
+
+/**
+ * GP_Cone
+ */
+%{#include <gp_Cone.hxx>%}
+%rename(GP_Cone) gp_Cone;
+class gp_Cone
+{
+    public:
+	gp_Cone(const gp_Ax3& A3, const Standard_Real Angle, const Standard_Real Radius);
+};
+
+%extend gp_Cone
+{
+	
+	gp_Pnt getApex()
+   	{
+   		return self->Apex();	
+   	}
+   	
+   	gp_Pnt getLocation()
+   	{
+		return self->Location();	
+   	}
+   	
+   	gp_Ax3 getPosition()
+   	{
+		return self->Position();	
+   	}
+   	
+   	gp_Ax1 getAxis()
+   	{
+		return self->Axis();	
+   	}
+   	
+   	gp_Ax1 getAxisX()
+   	{
+		return self->XAxis();	
+   	}
+   	
+   	gp_Ax1 getAxisY()
+   	{
+		return self->YAxis();	
+   	}
+   	
+   	Standard_Real getReferenceRadius()
+   	{
+		return self->RefRadius();	
+   	}
+   	
+   	Standard_Real getSemiAngle()
+   	{
+		return self->SemiAngle();	
+   	}
+  	 
+  	Standard_Real isRightHanded()
+   	{
+		return self->Direct();	
+   	}
+   	
+}
+
+/**
+ * GP_Cylinder
+ */
+%{#include <gp_Cylinder.hxx>%}
+%rename(GP_Cylinder) gp_Cylinder;
+class gp_Cylinder
+{
+    public:
+	gp_Cylinder(const gp_Ax3& A3, const Standard_Real Radius);
+};
+
+%extend gp_Cylinder
+{
+	   	
+	gp_Pnt getLocation()
+   	{
+		return self->Location();	
+   	}
+   	
+   	gp_Ax3 getPosition()
+   	{
+		return self->Position();	
+   	}
+   	
+   	gp_Ax1 getAxis()
+   	{
+		return self->Axis();	
+   	}
+   	
+   	gp_Ax1 getAxisX()
+   	{
+		return self->XAxis();	
+   	}
+   	
+   	gp_Ax1 getAxisY()
+   	{
+		return self->YAxis();	
+   	}
+   	
+   	Standard_Real getRadius()
+   	{
+		return self->Radius();	
+   	}
+   	  	
+}
+
 /**
  * GP_Parab
  */
@@ -379,6 +669,273 @@ class gp_Parab
 	gp_Parab(const gp_Ax1& D,const gp_Pnt& F);
 };
 
+%extend gp_Parab
+{
 
+   	gp_Pnt getLocation()
+   	{
+		return self->Location();	
+   	}
+   	
+   	gp_Ax3 getPosition()
+   	{
+		return self->Position();	
+   	}
+   	
+   	gp_Ax1 getAxis()
+   	{
+		return self->Axis();	
+   	}
+   	
+   	gp_Ax1 getAxisX()
+   	{
+		return self->XAxis();	
+   	}
+   	
+   	gp_Ax1 getAxisY()
+   	{
+		return self->YAxis();	
+   	}
+  	
+}
 
+/**
+ * GP_Hypr
+ */
+%{#include <gp_Hypr.hxx>%}
+%rename(GP_Hypr) gp_Hypr;
+class gp_Hypr
+{
+    public:
+	gp_Hypr(const gp_Ax2& A2,const Standard_Real MajorRadius,const Standard_Real MinorRadius);
+};
 
+%extend gp_Hypr
+{
+
+   	gp_Ax1 getAsymptote1()
+   	{
+		return self->Asymptote1();	
+   	}
+   	
+   	gp_Ax1 getAsymptote2()
+   	{
+		return self->Asymptote2();	
+   	}
+   	
+   	gp_Hypr getConjugateBranch1()
+   	{
+		return self->ConjugateBranch1();	
+   	}
+   	
+   	gp_Hypr getConjugateBranch2()
+   	{
+		return self->ConjugateBranch2();	
+   	}
+   	
+   	gp_Ax1 getDirectrix1()
+   	{
+		return self->Directrix1();	
+   	}
+
+	gp_Ax1 getDirectrix2()
+   	{
+		return self->Directrix2();	
+   	}
+   	
+   	Standard_Real getEccentricity()
+   	{
+   		return self->Eccentricity();	
+   	}
+   	
+   	gp_Pnt getFocus1()
+   	{
+   		return self->Focus1();	
+   	}
+   	
+   	gp_Pnt getFocus2()
+   	{
+   		return self->Focus2();	
+   	}
+   	   	
+   	gp_Pnt getLocation()
+   	{
+		return self->Location();	
+   	}
+   	
+   	gp_Ax3 getPosition()
+   	{
+		return self->Position();	
+   	}
+   	
+   	gp_Ax1 getAxis()
+   	{
+		return self->Axis();	
+   	}
+   	
+   	gp_Ax1 getAxisX()
+   	{
+		return self->XAxis();	
+   	}
+   	
+   	gp_Ax1 getAxisY()
+   	{
+		return self->YAxis();	
+   	}
+    
+}
+
+/**
+ * GP_Torus
+ */
+%{#include <gp_Torus.hxx>%}
+%rename(GP_Torus) gp_Torus;
+class gp_Torus
+{
+    public:
+	gp_Torus(const gp_Ax3& A3, Standard_Real& MajorRadius, Standard_Real& MinorRadius);
+};
+
+%extend gp_Torus
+{
+
+	Standard_Real getArea()
+   	{
+		return self->Area();	
+   	}
+
+	Standard_Real getMajorRadius()
+   	{
+		return self->MajorRadius();	
+   	}
+   	
+   	Standard_Real getMinorRadius()
+   	{
+		return self->MinorRadius();	
+   	}
+	
+	Standard_Real isRightHanded()
+   	{
+		return self->Direct();	
+   	}
+  	
+   	gp_Pnt getLocation()
+   	{
+		return self->Location();	
+   	}
+   	
+   	gp_Ax3 getPosition()
+   	{
+		return self->Position();	
+   	}
+   	
+   	gp_Ax1 getAxis()
+   	{
+		return self->Axis();	
+   	}
+   	
+   	gp_Ax1 getAxisX()
+   	{
+		return self->XAxis();	
+   	}
+   	
+   	gp_Ax1 getAxisY()
+   	{
+		return self->YAxis();	
+   	}
+
+}
+
+/**
+ * GP_Sphere
+ */
+%{#include <gp_Sphere.hxx>%}
+%rename(GP_Sphere) gp_Sphere;
+class gp_Sphere
+{
+    public:
+	gp_Sphere(const gp_Ax3& A3, Standard_Real& radius);
+};
+
+%extend gp_Sphere
+{
+
+	Standard_Real getArea()
+   	{
+		return self->Area();	
+   	}
+
+	Standard_Real getRadius()
+   	{
+		return self->Radius();	
+   	}
+   	
+	Standard_Real isRightHanded()
+   	{
+		return self->Direct();	
+   	}
+  	
+   	gp_Pnt getLocation()
+   	{
+		return self->Location();	
+   	}
+   	
+   	gp_Ax3 getPosition()
+   	{
+		return self->Position();	
+   	}   	 
+   	
+   	gp_Ax1 getAxisX()
+   	{
+		return self->XAxis();	
+   	}
+   	
+   	gp_Ax1 getAxisY()
+   	{
+		return self->YAxis();	
+   	}
+
+}
+
+/**
+ * GP_Pln
+ */
+%{#include <gp_Pln.hxx>%}
+%rename(GP_Pln) gp_Pln;
+class gp_Pln
+{
+    public:
+	gp_Pln(const gp_Ax3& A3);
+	gp_Pln(const gp_Pnt& p, gp_Dir &dir);
+	gp_Pln(const Standard_Real A, const Standard_Real B, const Standard_Real C, const Standard_Real D);	
+};
+
+%extend gp_Pln
+{
+
+   	gp_Ax1 getAxis()
+   	{
+		return self->Axis();	
+   	}
+   	
+   	gp_Pnt getLocation()
+   	{
+		return self->Location();	
+   	}
+   	
+   	gp_Ax3 getPosition()
+   	{
+		return self->Position();	
+   	}
+   	
+   	gp_Ax1 getAxisX()
+   	{
+		return self->XAxis();	
+   	}
+   	
+   	gp_Ax1 getAxisY()
+   	{
+		return self->YAxis();	
+   	}
+
+}

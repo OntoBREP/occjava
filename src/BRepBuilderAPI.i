@@ -22,6 +22,7 @@
 #include <BRepBuilderAPI_Transform.hxx>
 #include <BRepBuilderAPI_ModifyShape.hxx>
 #include <BRepBuilderAPI_MakeShape.hxx>
+#include <BRepBuilderAPI_MakeShell.hxx>
 #include <BRepBuilderAPI_MakeWire.hxx>
 #include <BRepBuilderAPI_MakeVertex.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
@@ -36,6 +37,12 @@
 #define BRepBuilderAPI_Sewing BRepAlgo_Sewing
 #endif
 %}
+%include "enumtypesafe.swg"
+enum BRepBuilderAPI_EdgeError {BRepBuilderAPI_EdgeDone, BRepBuilderAPI_PointProjectionFailed, BRepBuilderAPI_ParameterOutOfRange, BRepBuilderAPI_DifferentPointsOnClosedCurve,
+  BRepBuilderAPI_PointWithInfiniteParameter, BRepBuilderAPI_DifferentsPointAndParameter, BRepBuilderAPI_LineThroughIdenticPoints};
+enum BRepBuilderAPI_FaceError {BRepBuilderAPI_FaceDone, BRepBuilderAPI_NoFace, BRepBuilderAPI_NotPlanar, BRepBuilderAPI_CurveProjectionFailed, BRepBuilderAPI_ParametersOutOfRange};
+enum BRepBuilderAPI_WireError {BRepBuilderAPI_WireDone, BRepBuilderAPI_EmptyWire, BRepBuilderAPI_DisconnectedWire, BRepBuilderAPI_NonManifoldWire};
+enum BRepBuilderAPI_ShellError {BRepBuilderAPI_ShellDone, BRepBuilderAPI_EmptyShell, BRepBuilderAPI_DisconnectedShell, BRepBuilderAPI_ShellParametersOutOfRange};
 
 class BRepBuilderAPI_Command
 {
@@ -102,7 +109,20 @@ class BRepBuilderAPI_MakeWire : public BRepBuilderAPI_MakeShape
 	void Add(const TopoDS_Wire& W) ;
 	void Add(const TopTools_ListOfShape & shapes);
 	Standard_Boolean IsDone() const;
+	BRepBuilderAPI_WireError Error() const;
 	//const TopoDS_Wire& Wire() const;
+};
+
+class BRepBuilderAPI_MakeShell : public BRepBuilderAPI_MakeShape
+{
+	%rename(shell) Shell;
+	%rename(add) Add;
+	%rename(isDone) IsDone;
+	public:
+	BRepBuilderAPI_MakeShell();
+	Standard_Boolean IsDone() const;
+	BRepBuilderAPI_ShellError Error() const;
+	//const TopoDS_Shell& Shell() const;
 };
 
 class BRepBuilderAPI_MakeEdge : public BRepBuilderAPI_MakeShape
@@ -122,7 +142,13 @@ class BRepBuilderAPI_MakeEdge : public BRepBuilderAPI_MakeShape
 	BRepBuilderAPI_MakeEdge(const gp_Parab& L,const Standard_Real p1,const Standard_Real p2);
 	BRepBuilderAPI_MakeEdge(const gp_Parab& L,const gp_Pnt& P1,const gp_Pnt& P2);
 	BRepBuilderAPI_MakeEdge(const gp_Parab& L,const TopoDS_Vertex& V1,const TopoDS_Vertex& V2);
+	BRepBuilderAPI_MakeEdge(const Handle_Geom_Curve& L, const TopoDS_Vertex& V1,const TopoDS_Vertex& V2);
+	BRepBuilderAPI_MakeEdge(const Handle_Geom_Curve& L, const TopoDS_Vertex& V1,const TopoDS_Vertex& V2,const Standard_Real p1,const Standard_Real p2);
+	BRepBuilderAPI_MakeEdge(const Handle_Geom_Curve& L, const Standard_Real p1,const Standard_Real p2);
+    // 2d curves
+	BRepBuilderAPI_MakeEdge(const Handle_Geom2d_Curve& L, const Handle_Geom_Surface& S, const Standard_Real p1,const Standard_Real p2);
 	Standard_Boolean IsDone() const;
+	BRepBuilderAPI_EdgeError Error() const;
 	//const TopoDS_Edge& Edge() const;
 };
 
@@ -133,6 +159,11 @@ class BRepBuilderAPI_MakeFace  : public BRepBuilderAPI_MakeShape
 	BRepBuilderAPI_MakeFace(const TopoDS_Wire& W,
 		const Standard_Boolean OnlyPlane = Standard_False);
     BRepBuilderAPI_MakeFace(const TopoDS_Face& F,const TopoDS_Wire& W);
+    BRepBuilderAPI_MakeFace(const Handle_Geom_Surface& S,const TopoDS_Wire& W, const Standard_Boolean Inside = Standard_True );
+    BRepBuilderAPI_MakeFace(const Handle_Geom_Surface& S, const Standard_Real Umin, const Standard_Real Umax, 
+        const Standard_Real Vmin, const Standard_Real Vmax, const Standard_Real tolDegen); 
+    Standard_Boolean IsDone() const;
+    BRepBuilderAPI_FaceError Error() const;
 	//const TopoDS_Face& Face() const;
 };
 

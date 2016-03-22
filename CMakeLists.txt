@@ -60,6 +60,12 @@ if(WIN32)
       set_target_properties(${SWIG_MODULE_OccJava_REAL_NAME} PROPERTIES PREFIX "")
   endif(MINGW)
 endif(WIN32)
+
+install(
+	FILES ${CMAKE_CURRENT_BINARY_DIR}/libOccJava.so
+	DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)
+
 #CMake won't create this directory it self. A bug ?
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src)
 

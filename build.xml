@@ -8,7 +8,7 @@
 
     <target name="compile" depends="init" description="Compile">
         <mkdir dir="${classes.dir}"/>
-        <javac debug="true" deprecation="true" destdir="${classes.dir}" srcdir="${src.dir}">
+        <javac includeantruntime="false" debug="true" deprecation="true" destdir="${classes.dir}" srcdir="${src.dir}">
             <compilerarg line="${compiler.arg}"/>
             <include name="org/jcae/opencascade/**"/>
         </javac>
@@ -21,7 +21,7 @@
 
     <target name="compile-junit" depends="init,jar" description="Compile junit tests">
         <mkdir dir="${classes.test.dir}"/>
-        <javac debug="true" deprecation="true" destdir="${classes.test.dir}" srcdir="${src.test.dir}">
+        <javac includeantruntime="false" debug="true" deprecation="true" destdir="${classes.test.dir}" srcdir="${src.test.dir}">
             <compilerarg line="${compiler.arg}"/>
             <classpath>
                 <pathelement location="${junit.jar}"/>
@@ -71,13 +71,14 @@
 	
     <target name="clean" depends="init" description="Clean all build products." >
         <delete dir="${classes.dir}"/>
+        <delete dir="${build.dir}"/>
         <delete dir="${classes.test.dir}"/>
         <delete dir="${test.dir}/results"/>
         <delete dir="${javadoc.dir}"/>
         <delete file="${occjava.jar}"/>
         <delete file="${test.jar}"/>
 		<delete>
-			<fileset dir="src-java/org/jcae/opencascade/jni" excludes="BRepOffsetAPI_Sewing.java"/>
+			<fileset dir="src-java/org/jcae/opencascade/jni" excludes="BRepOffsetAPI_Sewing.java,Geom_GeometryEnum.java,Geom2d_GeometryEnum.java"/>
 		</delete>
     </target>
 

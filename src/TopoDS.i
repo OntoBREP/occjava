@@ -19,6 +19,9 @@
  * (C) Copyright 2009, by EADS France
  */
 
+SWIG_JAVABODY_PROXY(public, public, SWIGTYPE)
+SWIG_JAVABODY_TYPEWRAPPER(public, public, public, SWIGTYPE)
+
 %{
 #include <TopoDS_CompSolid.hxx>
 #include <TopoDS_Solid.hxx>
@@ -154,7 +157,7 @@
     {
         if (o instanceof TopoDS_Shape)
         {
-            return isSame((TopoDS_Shape)o);
+            return nativeIsEqual((TopoDS_Shape)o);
         }
         else return false;
     }
@@ -194,18 +197,39 @@ class TopoDS_Shape
 	%rename(free) Free;
 	%rename(shapeType) ShapeType;
 	%rename(nativeIsSame) IsSame;
+	%rename(nativeIsEqual) IsEqual;
 	%rename(orientation) Orientation;
 	%rename(reverse) Reverse;
 	%rename(reversed) Reversed;
 	%rename(hashCode) HashCode;
 	TopAbs_ShapeEnum ShapeType();
-	Standard_Boolean IsSame(const TopoDS_Shape& other) const;
-	TopAbs_Orientation Orientation() const;
+	Standard_Boolean IsSame (const TopoDS_Shape& other) const ;
+	Standard_Boolean IsPartner (const TopoDS_Shape &other) const ;
+	Standard_Boolean IsEqual (const TopoDS_Shape &other) const ;
+	const TopLoc_Location& Location () const ;
+	void Location (const TopLoc_Location& Loc) ;
+	TopAbs_Orientation Orientation() const ;
+	void Orientation (const TopAbs_Orientation Orient) ;
 	void Reverse() ;
 	TopoDS_Shape Reversed() const;
 	Standard_Integer HashCode(const Standard_Integer Upper) const;
 	Standard_Boolean Free() const;
 	void Free(const Standard_Boolean F) ;
+	Standard_Boolean Locked () const ;
+	void Locked (const Standard_Boolean F);
+	Standard_Boolean Modified () const ;
+	void Modified (const Standard_Boolean M);
+	Standard_Boolean Checked () const ;
+	void Checked (const Standard_Boolean C);
+	Standard_Boolean Orientable () const ;
+	void Orientable (const Standard_Boolean C);
+	Standard_Boolean Closed () const ;
+	void Closed (const Standard_Boolean C);
+	Standard_Boolean Infinite () const ;
+	void Infinite (const Standard_Boolean C);
+	Standard_Boolean Convex () const ;
+	void Convex (const Standard_Boolean C);
+	
 };
 
 %extend TopoDS_Shape
@@ -279,6 +303,9 @@ class TopoDS_Builder
 	TopoDS_Builder()=0;
 	public:
 	void MakeWire(TopoDS_Wire& W) const;
+	void MakeShell(TopoDS_Shell& S) const;
+	void MakeSolid(TopoDS_Solid& S) const;
+	void MakeCompSolid(TopoDS_CompSolid& C) const;
 	void MakeCompound(TopoDS_Compound& C) const;
 	void Add(TopoDS_Shape& S,const TopoDS_Shape& C) const;
 	void Remove(TopoDS_Shape& S,const TopoDS_Shape& C) const;	
