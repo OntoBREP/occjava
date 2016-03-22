@@ -2,7 +2,7 @@
 
 This repository contains an extended version of the OccJava wrapper that is part of the Java Computer Aided Engineering project (https://github.com/jeromerobert/jCAE).
 
-An Ubuntu-related sequence of actions for building OccJava are:
+An Ubuntu-related sequence of actions for building OccJava is:
 
 - Install required system dependencies:
 
