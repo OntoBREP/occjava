@@ -5,11 +5,11 @@ This repository contains an extended version of the OccJava wrapper that is part
 An Ubuntu-related sequence of actions for building OccJava is:
 
 - Install required system dependencies:
-
+```
  sudo apt-get install git stow build-essential openjdk-7-jdk ant swig2.0 cmake
-  
+```
 - Download and build OpenCascade Community Edition (OCE)
-
+```
  git clone git://github.com/tpaviot/oce.git ~/oce
  mkdir -p ~/oce/build
  cd ~/oce
@@ -20,18 +20,18 @@ An Ubuntu-related sequence of actions for building OccJava is:
  sudo make install/strip
  cd /usr/local/stow
  sudo stow oce
-
+```
 - Set required environmental variables, assuming bash shell:
-
+```
  echo 'export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64' >> ~/.bashrc
  echo 'export OCE_DIR=/usr/local/lib/oce-0.18-dev' >> ~/.bashrc
  echo 'export CASROOT=/usr/local' >> ~/.bashrc
  echo 'export MMGT_OPT=0' >> ~/.bashrc
  echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/lib/jni' >> ~/.bashrc
  source ~/.bashrc
-
+```
 - Build occjava (native part):
-
+```
  git clone https://github.com/OntoBREP/occjava.git ~/occjava
  mkdir -p ~/occjava/build
  cd ~/occjava/build
@@ -40,11 +40,11 @@ An Ubuntu-related sequence of actions for building OccJava is:
  sudo make install
  cd /usr/local/stow
  sudo stow occjava
- 
+```
 - Build occjava (Java part):
-
-  cd ~/occjava/
-  ant
-
+```
+ cd ~/occjava/
+ ant
+```
 Done. The OccJava wrapper occjava.jar should reside in ~/occjava/lib. It depends on libOccJava.so and the OCE libs in /usr/local/lib.
 
